@@ -12,3 +12,22 @@
     数据统计：收集各demo的训练误差情况、测试误差、内存、显存、CPU等各项指标情况，并进行对比分析。
     
 ## 测试框架的使用
+
+  执行 ./regression_test -c [dockerhub|github]或./regression_test --conf=[dockerhub|github].
+  
+  ```bash
+ $ ./regression_test.sh --help
+  Usage: ./regression_test.sh [option] [arg]
+
+Options and arguments
+
+  -c --conf   : specify the conf path
+  -h --help   : print this help message
+
+e.g.:
+  ./regression_test.sh -c dockerhub        : build images from paddle dockerhub
+  ./regression_test.sh --conf=dockerhub    : build images from paddle dockerhub
+
+  ./regression_test.sh -c github           : build images from paddle github that branch is develop
+  ./regression_test.sh --conf=github       : build images from paddle github that branch is develop
+  ```
