@@ -2,7 +2,7 @@
      回归测试主要验证Paddle各个版本的变化，并不会对demo的行为造成影响。我们通过执行demo，并统计各demo的训练误差情况、测试误差情况、训练速度、内存使用情况、显存使用情况以及CPU使用情况等进行验证。
      
 ## 回归测试框架介绍
-HEAD
+
      Paddle回归测试框架分为三部分：容器的构建、demo的自动化运行、数据统计。具体框架
     图下图所示：
     ![image](https://github.com/dayhaha/regtest/raw/master/regression.png)
