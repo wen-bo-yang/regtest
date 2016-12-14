@@ -1,0 +1,29 @@
+#Build docker image with paddle source code that branch is the default
+#The paddle source code address is https://github.com/PaddlePaddle/Paddle
+
+#The version has four type
+# version = gpu-avx
+# version = cpu-avx
+# version = gpu-noavx
+# version = cpu-noavx
+version = gpu-avx
+#Run paddle moudlae with cpu or gpu
+# mod = cpu
+mod = gpu
+#The rebuild is that rebuild docker image
+# rebuild = ON
+rebuild = OFF
+#Run paddle demo name
+#if demo has muitiple module, pleas use '@' split demo name and module name
+#module is all that mean is run all module
+demo_name = sentiment
+#The docker_image_name is mean that the name of build docker image REPOSITORY
+docker_image_name = regression/paddle
+#The docker_container_name is mean that the name of running docker container
+docker_container_name = ywb_ssh_develop
+#The paddle_git_repo is that paddle source code on GitHub
+#Please remove paddle source code, if you want rebuild docker images with the latest
+paddle_git_repo = https://github.com/PaddlePaddle/Paddle.git
+#Building the docker images use china apt source, if china_apt_mirrors = ON
+#Building the docker images doesn't use china apt source, if china_apt_mirrors = OFF
+china_apt_mirrors = ON
