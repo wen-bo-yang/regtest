@@ -3,6 +3,7 @@ import sys
 import datetime
 import bisect
 
+
 def readMonitorFile(monitorFile):
     monitorTime = []
     with open(monitorFile, 'r') as f:
@@ -17,21 +18,22 @@ def readMonitorFile(monitorFile):
     return monitorTime
 
 
-
 def readTrainLogFileAndLocateTag(logFile, monitorTime):
     tagList = {}
     with open(logFile, 'r') as f:
         line = f.readline()
         while line:
             [t1, t2, tag] = line.split()[:3]
-            t1 = t1.replace('I','').replace('.','')
-            dtime = datetime.datetime.strptime(str(datetime.datetime.now().year) + "-" + t1[:2] + "-" + t1[2:] 
-                    + "_" + t2.split('.')[0], "%Y-%m-%d_%H:%M:%S")
-            index= bisect.bisect(monitorTime, dtime)
+            t1 = t1.replace('I', '').replace('.', '')
+            dtime = datetime.datetime.strptime(
+                str(datetime.datetime.now().year) + "-" + t1[:2] + "-" + t1[2:]
+                + "_" + t2.split('.')[0], "%Y-%m-%d_%H:%M:%S")
+            index = bisect.bisect(monitorTime, dtime)
             if index not in tagList.keys() or "Pass" not in tagList[index]:
-            	tagList[index] = tag
+                tagList[index] = tag
             line = f.readline()
     return tagList
+
 
 def addTagToMonitor(monitorTime, monitorFile, tagList, outMonitorFile):
     with open(monitorFile, 'r') as IN:
@@ -40,11 +42,12 @@ def addTagToMonitor(monitorTime, monitorFile, tagList, outMonitorFile):
             line = IN.readline()
             while line:
                 if index in tagList.keys():
-                    print >>OUT, line.strip(),tagList[index]
+                    print >> OUT, line.strip(), tagList[index]
                 else:
-                    print >>OUT, line.strip()
+                    print >> OUT, line.strip()
                 line = IN.readline()
                 index += 1
+
 
 if __name__ == '__main__':
     monitorFile = sys.argv[1]
@@ -54,4 +57,3 @@ if __name__ == '__main__':
     monitorTime = readMonitorFile(monitorFile)
     tagList = readTrainLogFileAndLocateTag(logFile, monitorTime)
     addTagToMonitor(monitorTime, monitorFile, tagList, outMonitorFile)
-
