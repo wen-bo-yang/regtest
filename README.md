@@ -9,7 +9,7 @@
 - **概述**
 
 Paddle回归测试框架分为三部分：容器的构建、demo的自动化运行、数据统计。具体框架图如下图所示：
-![image](https://github.com/dayhaha/regtest/raw/master/regression.png)
+![image](https://github.com/beckett1124/regtest/blob/develop/img/regression.png)
     
 其中，容器的构建：从github上拉取任意分支、任意版本，自动编译其paddle的docker容器环境。
 demo的自动化运行：自我选择性的选取想要运行的demo，或者运行所的demo。
