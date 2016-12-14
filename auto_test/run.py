@@ -50,6 +50,7 @@ def parse_conf(filename, demo_mode):
             outList.append(None)
     return outList
 
+
 def download_pro(download):
     """
     According to the value of download,to run the download data process.
