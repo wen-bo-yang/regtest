@@ -1,21 +1,21 @@
 #params section
 [params]
-#paddle docker image version
-#The paddle docker image is from https://hub.docker.com/r/paddledev/paddle/builds/
+#Paddle docker image version
+#The Paddle docker image is from https://hub.docker.com/r/Paddledev/Paddle/builds/
 #Please use image with demo when you use regression test script
 version = gpu-demo-v0.9.0a0
-#run paddle paddle moudle cpu or gpu
+#run Paddle Paddle moudle cpu or gpu
 mod = gpu
 #is rebuild locale images
 rebuild = ON
-#run paddle demo name
+#run Paddle demo name
+#if you want run all demo, please use demo_name = all
+#e.g. demo_name = all
 #if demo has muitiple module, pleas use '@' split demo name and module name
-#module is all that mean is run all module
+#Module is all that mean is run all module
+#e.g. demo_name = quick_start@all
 demo_name = sentiment
 #The docker_image_name is mean that the name of build docker image REPOSITORY
-docker_image_name = ywb_ssh_paddle
+docker_image_name = regression/paddle
 #The docker_container_name is mean that the name of running docker container
 docker_container_name = paddle_gpu_0.9.0a
-#Building the docker images use china apt source, if china_apt_mirrors = ON
-#Building the docker images doesn't use china apt source, if china_apt_mirrors = OFF
-china_apt_mirrors = ON
