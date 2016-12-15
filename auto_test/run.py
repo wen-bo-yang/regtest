@@ -1,5 +1,38 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding:utf-8 -*-
+# Copyright (c) 2016 PaddlePaddle Authors. All Rights Reserved
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Usage: run.py -c [DEMOCONF] -n [DEMONAME] -g [GPUMODE]
+
+ run.py
+ Version 1.0
+
+ run.py -- to decide how th run each demo,
+           and get the train.log for monitor
+
+Arguments:
+    DEMOCONF                the configure file of demo 
+    DEMONAME                choose which demo to run 
+    GPUMODE                 choose whether to use gpu 
+
+Options:
+    -h      --help
+    -c      demo_conf
+    -n      demo_name
+    -g      gpu_mode
+
+"""
 
 # Copyright (c) 2016 PaddlePaddle Authors. All Rights Reserved
 #
@@ -25,6 +58,7 @@ import ConfigParser
 import string, os, sys
 import subprocess
 import time
+from docopt import docopt
 
 
 def parse_conf(filename, demo_mode):
@@ -188,9 +222,9 @@ def get_sub_demo(demo_mode):
 
 
 def main(argv):
-    demo_conf = sys.argv[1]
-    demo_name = sys.argv[2]
-    gpu_mode = sys.argv[3]
+    demo_conf = argv['DEMOCONF']
+    demo_name = argv['DEMONAME']
+    gpu_mode = argv['GPUMODE']
 
     DEMO_PATH = "/root/paddle/demo/"
     demo_mode, sub_demo = get_sub_demo(demo_name)
@@ -232,4 +266,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    arguments = docopt(__doc__)
+    main(arguments)
