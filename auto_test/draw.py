@@ -31,40 +31,62 @@ import matplotlib
 import matplotlib.pyplot as plt
 import re
 import sys
+from docopt import docopt
 
-data = {
-    'Batch': [],
-    'AvgCost': [],
-    'CurrentCost': [],
-    'classification_error_evaluator': []
-}
 
-with open(logFile, 'r') as f:
-    for line in f:
-        if 'Pass' not in line:
+def drawLogInfo(logFile):
+    data = {'AvgCost': []}
+    passPos = []
+    with open(logFile, 'r') as f:
+        batchCounter = 0
+        for line in f:
+            if "AvgCost" not in line:
+                continue
             for attr in data.keys():
-                pattern = re.compile(attr + '=(.*?) ', re.S)
+                pattern = re.compile(attr + '=([0-9]\.?[0-9]?)', re.S)
                 result = re.findall(pattern, line.strip())
                 if len(result) == 0:
                     continue
                 data[attr].append(float(result[0]))
-        else:
-            pattern = re.compile("Pass=(.*?) ", re.S)
-            passNum = re.findall(pattern, line.strip())
-            if len(passNum) == 0:
+            if 'Pass' in line:
+                pattern = re.compile("Pass=(.*?) ", re.S)
+                passNum = re.findall(pattern, line.strip())
+                passPos.append(data["AvgCost"][-1])
+            batchCounter += 1
+        for key in data.keys():
+            f = plt.figure()
+            plt.plot(range(len(data[key])), data[key])
+            f.savefig(key + '.png')
+            #for pos in passPos:
+            #plt.annotate(
+            #    pos[1],
+            #    xy=(pos[0], data[key][pos[0]]),
+            #    xytext=(pos[0] + 1, data[key][pos[0]] * 1.2),
+            #    arrowprops=dict(
+            #        facecolor='black', shrink=0.5), )
+            f = plt.figure()
+            plt.plot(range(len(passPos)), passPos)
+            f.savefig(key + '_pass.png')
+
+
+def drawPaddleMemoryUsage(monitorFile):
+    data = {'memory': [], "gpuMemory": []}
+    with open(monitorFile, 'r') as f:
+        for line in f:
+            if line[0] != "2":
                 continue
-            passNum = passNum[0]
-            plt.plot(data['Batch'], data['CurrentCost'])
-            plt.show()
-            # print data
-            data = {
-                'Batch': [],
-                'AvgCost': [],
-                'CurrentCost': [],
-                'classification_error_evaluator': []
-            }
+            lineData = line.strip().split('\t')
+            data['memory'].append(int(lineData[3].split('(')[0]))
+            data['gpuMemory'].append(int(lineData[4].split()[0]))
+        for key in data.keys():
+            f = plt.figure()
+            plt.plot(range(len(data[key])), data[key])
+            f.savefig(key + '.png')
+
 
 if __name__ == '__main__':
     arguments = docopt(__doc__)
     monitorFile = arguments['MONITORFILE']
     logFile = arguments['LOGFILE']
+    drawLogInfo(logFile)
+    drawPaddleMemoryUsage(monitorFile)

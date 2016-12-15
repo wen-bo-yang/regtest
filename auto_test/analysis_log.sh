@@ -13,11 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TEST_PATH=/root/auto_test
-LOG_PATH=`ls ${TEST_PATH} | grep logdir | sort | tail -n 1`
-
 function usage() {
-  echo "Usage: $0 -i MONITOR_LOG -t TRAIN_LOG"
+  echo "Usage: $0 -i MONITOR_LOG -t TRAIN_LOG -g GENERATED_LOG_PATH -s SAVE_LOG_PATH"
 }
 
 if [ $# -eq 0 ];then
@@ -25,10 +22,16 @@ if [ $# -eq 0 ];then
   exit -1
 fi
 
-while getopts "d:s:i:t:" arg;do
+TEST_PATH="$(pwd)"
+LOG_PATH=`ls ${TEST_PATH} | grep logdir | sort | tail -n 1`
+if [ x$LOGPATH == x ];then
+    LOG_PATH=$TEST_PATH/logdir
+fi
+
+while getopts "g:s:i:t:" arg;do
   case ${arg} in
-    d)
-      DEMO_PATH=${OPTARG}
+    g)
+      GENERATED_LOG_PATH=${OPTARG}
       ;;
     s) 
       SAVE_LOG_PATH=${OPTARG}
@@ -46,13 +49,13 @@ while getopts "d:s:i:t:" arg;do
   esac
 done
 
-if [ -d ${LOG_PATH}/${SAVE_LOG_PATH} ]; then
-  rm -rf ${LOG_PATH}/${SAVE_LOG_PATH}
-fi
+#if [ -d ${LOG_PATH}/${SAVE_LOG_PATH} ]; then
+#  rm -rf ${LOG_PATH}/${SAVE_LOG_PATH}
+#fi
 
 mkdir -p ${LOG_PATH}/${SAVE_LOG_PATH}
 
 awk '{if ($0 ~ /Batch=/) print $1,$2,$5,$6,$7,$8,$10,$12; else if ($0 ~ /Test samples/) print $1,$2,$6,$7,$9}' \
-  ${DEMO_PATH}/${TRAIN_LOG} > ${LOG_PATH}/${SAVE_LOG_PATH}/${TRAIN_LOG}.out
-python ${TEST_PATH}/addTag.py -m ${DEMO_PATH}/${MONITOR_LOG}  -l ${LOG_PATH}/${SAVE_LOG_PATH}/${TRAIN_LOG}.out  \
+  ${GENERATED_LOG_PATH}/${TRAIN_LOG} > ${LOG_PATH}/${SAVE_LOG_PATH}/${TRAIN_LOG}.out
+python ${TEST_PATH}/addTag.py -m ${GENERATED_LOG_PATH}/${MONITOR_LOG}  -l ${LOG_PATH}/${SAVE_LOG_PATH}/${TRAIN_LOG}.out  \
   -o ${LOG_PATH}/${SAVE_LOG_PATH}/${MONITOR_LOG}.out
