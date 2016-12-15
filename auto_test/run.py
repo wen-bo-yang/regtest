@@ -15,7 +15,11 @@
 # limitations under the License.
 """Usage: run.py -c [DEMOCONF] -n [DEMONAME] -g [GPUMODE]
 
-addTag to monitorFile.
+ run.py
+ Version 1.0
+
+ run.py -- to decide how th run each demo,
+           and get the train.log for monitor
 
 Arguments:
     DEMOCONF                the configure file of demo 
@@ -38,6 +42,13 @@ from docopt import docopt
 
 
 def parse_conf(filename, demo_mode):
+    """
+    According to the value of demo_mode,
+    get the related information to run each demo.
+    :param filename:the process name write in demo.conf
+    :param demo_mode:the name of demo_mode which input
+    :return: the list for each demo_mode
+    """
     cf = ConfigParser.ConfigParser()
     cf.read(filename)
     secs = cf.sections()
@@ -55,37 +66,63 @@ def parse_conf(filename, demo_mode):
 
 
 def download_pro(download):
+    """
+    According to the value of download,to run the download data process.
+    :param download: the value of download
+    :return:None
+    """
     if download is not None:
         download_pro = subprocess.call(download, shell=True)
 
 
 def preprocess_pro(preprocess):
+    """
+    According to the value of preprocess,to run the preprocess process.
+    :param preprocess: the value of preprocess
+    :return:None
+    """
     if preprocess is not None:
         preprocess_pro = subprocess.call(preprocess, shell=True)
 
 
 def train_pro(train):
+    """
+    According to the value of train,to run the train process.
+    :param train: the value of train
+    :return:None
+    """
     if train is not None:
         train_pro = subprocess.call(train, shell=True)
 
 
 def predict_pro(predict):
+    """
+    According to the value of predict,to run the predict process.
+    :param predict: the value of predict
+    :return:None
+    """
     if predict is not None:
         predict_pro = subprocess.call(predict, shell=True)
 
 
 def test_pro(test):
+    """
+    According to the value of test,to run the test process.
+    :param test: the value of test
+    :return:None
+    """
     if test is not None:
         test_pro = subprocess.call(test, shell=True)
 
 
 def replace_mode_pro(source, gpu_mode, demo_mode, sub_demo):
-    """replace mode when need gpu or cpu
-    Args:
-        source:the file need to replace
-        gpu_mode:the value of gpu_mode
-        demo_mode:the name of demo
-        sub_demo:the name of sub_demo
+    """
+    replace mode when need gpu or cpu
+    :param source:the file need to replace
+    :param gpu_mode:the value of gpu_mode
+    :param demo_mode:the name of demo
+    :param sub_demo:the name of sub_demo
+    :return:None
     """
     if source is not None:
         source = source.split('./')[1]
@@ -149,8 +186,11 @@ def replace_mode_pro(source, gpu_mode, demo_mode, sub_demo):
 
 
 def get_sub_demo(demo_mode):
-    """get the name of sub demo!"""
-
+    """
+    get the name of sub demo
+    :param demo_mode: the name of demo_mode
+    :return:demo_name,sub_demo
+    """
     if demo_mode.find('@') >= 0:
         print "Demo_mode contains the sub demo!"
         sub_demo = demo_mode.split('@')[1]

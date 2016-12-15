@@ -22,6 +22,7 @@ LOG_PATH="/root/auto_test/logdir"_${logdate}
 mkdir ${LOG_PATH}
 cd ${RUN_PATH}
 
+#the demo list
 DEMO_NAME=(
 "quick_start@lr"
 "quick_start@cnn"
@@ -34,6 +35,7 @@ DEMO_NAME=(
 "semantic_role_labeling"
 )
 
+#the demo name of quick start
 QUICK_START=(
 "quick_start@lr"
 "quick_start@cnn"
@@ -47,13 +49,18 @@ function usage()
   echo "example: `basename $0` gpu quick" >&2
 }
 
-
 if [ $# -lt 2 ]
 then
   usage >&2
   exit 1
 fi
 
+#According the name of demo,decide to run which demo;
+#if demo_name is in ['quick_start','quick_start@all'],it will run all of the quick start demo;
+#if demo_name is in ['all'],it will run all the demo;
+#if demo_name is in ['$DEMO_NAME[@]'],it will run the demo input;
+#if demo_name is None,it will run no demo and exit;
+#if demo_name is not match any,it will exit.
 if ([[ $2 == "quick_start" ]] || [[ $2 == "quick_start@all" ]]);then
     echo "run quick start demo !" 
     for demo in ${QUICK_START[@]};do
@@ -79,6 +86,6 @@ else:
 	exit
 	
 fi
-echo "Run Demo done!"
 
+echo "Run Demo done!"
 exit 0
