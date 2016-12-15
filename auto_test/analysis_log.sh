@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2016 Baidu, Inc. All Rights Reserved
+# Copyright (c) 2016 PaddlePaddle Authors. All Rights Reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -54,5 +54,5 @@ mkdir -p ${LOG_PATH}/${SAVE_LOG_PATH}
 
 awk '{if ($0 ~ /Batch=/) print $1,$2,$5,$6,$7,$8,$10,$12; else if ($0 ~ /Test samples/) print $1,$2,$6,$7,$9}' \
   ${DEMO_PATH}/${TRAIN_LOG} > ${LOG_PATH}/${SAVE_LOG_PATH}/${TRAIN_LOG}.out
-python ${TEST_PATH}/addTag.py ${DEMO_PATH}/${MONITOR_LOG}  ${LOG_PATH}/${SAVE_LOG_PATH}/${TRAIN_LOG}.out  \
-  ${LOG_PATH}/${SAVE_LOG_PATH}/${MONITOR_LOG}.out
+python ${TEST_PATH}/addTag.py -m ${DEMO_PATH}/${MONITOR_LOG}  -l ${LOG_PATH}/${SAVE_LOG_PATH}/${TRAIN_LOG}.out  \
+  -o ${LOG_PATH}/${SAVE_LOG_PATH}/${MONITOR_LOG}.out

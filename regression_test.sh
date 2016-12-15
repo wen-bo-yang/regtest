@@ -1,7 +1,7 @@
 #!/bin/bash
 #######################################################
 #
-# Copyright (c) 2016 Baidu, Inc. All Rights Reserved
+# Copyright (c) 2016 PaddlePaddle Authors. All Rights Reserved
 # Author PADDLE QA TEAM
 #
 # paddle regression test
@@ -423,4 +423,3 @@ else
     usage
     exit 1
 fi
-
