@@ -290,10 +290,10 @@ function pull_paddle_source_code() {
     if [[ -d ${PADDLE_SOURCE_DIR} ]]; then
         rm -rf ${PADDLE_SOURCE_DIR}
     fi
-    echo "---------------------------------"
+    echo "------------------------------------------"
     echo "git clone paddle branch is " ${GIT_BRANCH} 
-    echo "---------------------------------"
-    ${GIT} clone -b ${GIT_BRANCH} ${PADDLE_GIT_REPO}
+    echo "------------------------------------------"
+    ${GIT} clone --recursive -b ${GIT_BRANCH} ${PADDLE_GIT_REPO}
     cd ${PADDLE_SOURCE_DIR}
     git_branch=( $(git describe --contains --all HEAD) )
     if [[ ${git_branch} != ${GIT_BRANCH} ]]; then
