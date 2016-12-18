@@ -75,7 +75,7 @@ function err() {
 function parser_params() {
     INIFILE=$1
     ITEM=$2
-    params=`grep -v "#" ${CONF_FILE} | awk -F "=" '{if($1 ~ /'${ITEM}/'){print $2}}'`
+    params=$(grep -v "#" ${CONF_FILE} | awk -F "=" '{if($1 ~ /'${ITEM}/'){print $2}}')
     echo ${params}
 }
 
@@ -411,7 +411,6 @@ elif [[ ${SOURCE_FROM} == 'dockerhub' ]]; then
     if [[ "${IS_BUILD}" == "ON" ]]; then
         prepare_dockerfile
         build_docker_image
-        repair_env
     fi
 
     run_container
