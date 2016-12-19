@@ -51,9 +51,9 @@ demo的自动化运行：自我选择性的选取想要运行的demo，或者运
     在每次训练的同时，会启动 `monitor.sh` 脚本来对系统资源（cpu, gpu, memory）进行监控收集数据。
     `monitor.sh` 产生 `paddle_resource_usage.log` ，数据格式为:
 
-    DATE | PID | %MEM | GPU_MEM | START | TIME
-    -----|-----|------|---------|-------|-----
-    2016-11-23_07:33:55| 16698(PID) | 0.0(%memory) | 7028(KB memory) | 55 MiB_GPU_MEM | 07:33(begin time) | 0:00(run durning time)
+    DATE | PID | %MEM | MEM  | GPU_MEM | START | TIME
+    -----|-----|------|---------|-------|------|------
+    2016-11-23_07:33:55| 16698 | 0.0% | 7028KB | 55 MiB | 07:33 | 0:00
 
     训练脚本也会产生对应的训练log文件，进行简单的awk处理，提取出关键的信息。
 
@@ -61,15 +61,14 @@ demo的自动化运行：自我选择性的选取想要运行的demo，或者运
     `addTag.py` 函数，来根据训练log的中batch或pass对应的时间，来对应到 `paddle_resource_usage.log` 中，
     在 `paddle_resource_usage.log` 的基础上新增一列，如下:
 
-    DATE | PID | %MEM | GPU_MEM | START | TIME | TAG
-    -----|-----|------|---------|-------|------|-----
-    2016-11-23_07:33:55| 16698(PID) | 0.0(%memory) | 7028(KB memory) | 55 MiB_GPU_MEM 
-    | 07:33(begin time) | 0:00(run durning time) | Pass=0
+    DATE | PID | %MEM | MEM | GPU_MEM | START | TIME | TAG
+    -----|-----|------|---------|-------|------|-----|----
+    2016-11-23_07:33:55| 16698 | 0.0% | 7028KB | 55 MiB | 07:33 | 0:00 | Pass=0
 
     最后，根据训练log文件可以绘制出训练误差随训练进行变化的图像，根据monitor的log文件可以绘制出
     cpu,memory和gpu等随训练进行的图像。
 
-    ![image](https://github.com/beckett1124/regtest/blob/develop/img/log_analysis.png)
+    ![image](https://github.com/dayhaha/regtest/blob/test/img/log_analysis.png)
     
 
 ## 测试框架的使用
