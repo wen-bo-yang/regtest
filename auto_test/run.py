@@ -257,8 +257,9 @@ def main(argv):
     demo_path = demo_mode
     if sub_demo:
         demo_path += '/' + sub_demo
-    os.system('/root/auto_test/analysis_log.sh -d %s -s %s -i capability -t %s'
-              % (DEMO_PATH + demo_mode, demo_path, log))
+    os.system(
+        '/root/auto_test/analysis_log.sh -d %s -s %s -i paddle_resource_usage.log -t %s'
+        % (DEMO_PATH + demo_mode, demo_path, log))
 
     if demo_mode in ['quick_start', 'image_classification']:
         replace_mode_pro(predict, gpu_mode, demo_mode, sub_demo)

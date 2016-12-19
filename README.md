@@ -48,6 +48,24 @@ demo的自动化运行：自我选择性的选取想要运行的demo，或者运
   
   - 数据统计
 
+    在每次训练的同时，会启动 `monitor.sh` 脚本来对系统资源（cpu, gpu, memory）进行监控收集数据。
+    `monitor.sh` 产生 `paddle_resource_usage.log` ，在该log中，由于监控无法得知某一个时间在进行
+    哪个batch或pass，因此用`addTag.py` 函数，来根据训练log的中batch或pass对应的时间，来对应到 
+    `paddle_resource_usage.log` 中，在其的基础上新增一列，如下:
+
+    DATE | PID | %MEM | MEM | GPU_MEM | START | TIME | TAG(by addTag)
+    -----|-----|------|---------|-------|------|-----|----
+    2016-11-23_07:33:55| 16698 | 0.0% | 7028KB | 55 MiB | 07:33 | 0:00 | Pass=0
+
+    注:上面TAG对应Pass=0代表该时间在train.log中对应Pass=0的输出信息，即标注这条信息为Pass=0的训练占用资源状态。
+
+    训练脚本也会产生对应的训练log文件，进行简单的awk处理，提取出关键的信息。
+    最后，根据训练log文件可以绘制出训练误差随训练进行变化的图像，根据monitor的log文件可以绘制出
+    cpu,memory和gpu等随训练进行的图像。
+
+    ![image](https://github.com/beckett1124/regtest/blob/develop/img/log_analysis.png)
+    
+
 ## 测试框架的使用
 
 执行 `./run.sh --dockerhub=dockerhub` 或 `./run.sh --github=github`.
