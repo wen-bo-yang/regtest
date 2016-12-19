@@ -42,7 +42,7 @@ demo的自动化运行：自我选择性的选取想要运行的demo，或者运
 
     ![image](https://github.com/beckett1124/regtest/blob/develop/img/build_paddle_docker_image.png)
   
-  - demo自动化运行
+  - demo自动化运行 
     demo自动化运行主要涉及调控哪个demo的运行，demo如何运行这两方面。我们只需给demo_run.sh对应的输入参数，通过加载demo流程控制文件实现各demo的运行即可。考虑到各demo运行过程中，我们需完成GPU、内存占有率等参数统计，必然触发monitor.sh和analysis_log.sh实现数据统计。
   
   - 数据统计
