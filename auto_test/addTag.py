@@ -33,6 +33,13 @@ from docopt import docopt
 import sys
 import datetime
 import bisect
+"""
+    reaad Monitor file, the format is :
+    ---------------------2016-11-23_07:33:53 BEGIN-----------------------------
+    DATE	PID	%MEM	MEM	GPU_MEM	START	TIME
+    2016-11-23_07:33:55	16698(PID)	0.0(%memory)	7028(KB memory)	 55 MiB_GPU_MEM	07:33(begin time)	0:00(run durning time)
+    ....
+"""
 
 
 def readMonitorFile(monitorFile):
@@ -45,6 +52,19 @@ def readMonitorFile(monitorFile):
             dtime = datetime.datetime.strptime(time, "%Y-%m-%d_%H:%M:%S")
             monitorTime.append(dtime)
     return monitorTime
+
+
+"""
+    once we have a monitor file and a train log file, we have to identify the location of 
+    each line of train.log in monitor log file. After this, we can get format like below:
+    ---------------------2016-11-23_07:33:53 BEGIN-----------------------------
+    DATE	PID	%MEM	MEM	GPU_MEM	START	TIME    TAG
+    2016-11-23_07:34:22	16698(PID)	0.3(%memory)	717456(KB memory)	 766 MiB_GPU_MEM	07:33(begin time)	0:31(run durning time) Batch=300
+
+    Here we use binary search algorithm, for each line in train.log, we use the time to
+    search its location in monitor file. Thus we can know more about the resource usage, 
+    for example, we can know that in pass 0 and batch 300, the memory usage is 717456KB.
+"""
 
 
 def readTrainLogFileAndLocateTag(logFile, monitorTime):

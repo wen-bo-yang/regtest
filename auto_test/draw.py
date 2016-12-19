@@ -57,13 +57,6 @@ def drawLogInfo(logFile):
             f = plt.figure()
             plt.plot(range(len(data[key])), data[key])
             f.savefig(key + '.png')
-            #for pos in passPos:
-            #plt.annotate(
-            #    pos[1],
-            #    xy=(pos[0], data[key][pos[0]]),
-            #    xytext=(pos[0] + 1, data[key][pos[0]] * 1.2),
-            #    arrowprops=dict(
-            #        facecolor='black', shrink=0.5), )
             f = plt.figure()
             plt.plot(range(len(passPos)), passPos)
             f.savefig(key + '_pass.png')
