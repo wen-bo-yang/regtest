@@ -1,14 +1,17 @@
 #!/bin/bash
-#######################################################
+# Copyright (c) 2016 PaddlePaddle Authors. All Rights Reserved
 #
-# Copyright (c) 2016 Baidu, Inc. All Rights Reserved
-# Author PADDLE QA TEAM
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# paddle regression test
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-#######################################################
-
-#set -x
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 MOD=''
 VERSION=''
@@ -38,17 +41,15 @@ function usage(){
     echo ""
     echo "Options and arguments"
     echo ""
-    echo "  -c --conf   : specify the conf path"
+    echo "  --dockerhub : specify the conf file and build from dockerhub"
+    echo "  --github    : specify the conf file and build from github"
     echo "  -h --help   : print this help message"
     echo ""
     echo "e.g.:"
-    echo "  $0 -c dockerhub        : build images from paddle dockerhub"
-    echo "  $0 --conf=dockerhub    : build images from paddle dockerhub"
+    echo "  $0 --dockerhub=dockerhub    : build images from paddle dockerhub"
     echo ""
-    echo "  $0 -c github           : build images from paddle github" \
-                                     "that branch is develop"
-    echo "  $0 --conf=github       : build images from paddle github" \
-                                     "that branch is develop"
+    echo "  $0 --github=github          : build images from paddle github" \
+                                         "that branch is develop"
     echo ""
 }
 
@@ -78,9 +79,7 @@ function err() {
 function parser_params() {
     INIFILE=$1
     ITEM=$2
-    params=$( cat ${CONF_FILE} \
-        | grep -v "#" \
-        | awk -F "=" '{if($1 ~ /'${ITEM}/'){print $2}}' )
+    params=$(grep -v "#" ${CONF_FILE} | awk -F "=" '{if($1 ~ /'${ITEM}/'){print $2}}')
     echo ${params}
 }
 
@@ -99,7 +98,7 @@ function parser_params() {
 ############################################
 function prepare_dockerfile() {
     echo "...................begin prepare dockerfile..................."
-    if [[ ${CONF_FILE} == 'github' ]]; then
+    if [[ ${SOURCE_FROM} == 'github' ]]; then
         cp ${PADDLE_DF_PATH}/${PADDLE_DF_NAME} ${PADDLE_DF_PATH}/${PADDLE_DF_NAME}.bak
         if [[ ${CHINA_APT_MIRRORS} == 'ON' ]]; then
             sed -i "/RUN apt-get update/i\RUN sed -i 's#http://archive.ubuntu.com#http://mirrors.163.com#g' /etc/apt/sources.list" \
@@ -107,12 +106,8 @@ function prepare_dockerfile() {
         fi
         sed -i "/build.sh$/a\RUN cp -r /paddle/ /root/" \
             ${PADDLE_DF_PATH}/${PADDLE_DF_NAME}
-    elif [[ ${CONF_FILE} == 'dockerhub' ]]; then
+    elif [[ ${SOURCE_FROM} == 'dockerhub' ]]; then
         sed -i "s#FROM .*\$#FROM paddledev/paddle:${VERSION}#g" ./Dockerfile
-        if [[ ${CHINA_APT_MIRRORS} == 'ON' ]]; then
-            sed -i "/apt-get update/i\    sed -i 's#http://archive.ubuntu.com#http://mirrors.163.com#g' /etc/apt/sources.list" \
-                ./build_docker.sh
-        fi
     else
         err "UNKNOWN prepare dockerfile in function prepare_dockerfile"
         exit 1
@@ -132,10 +127,8 @@ function prepare_dockerfile() {
 #   None
 ############################################
 function repair_env() {
-    if [[ ${CONF_FILE} == 'github' ]]; then
+    if [[ ${SOURCE_FROM} == 'github' ]]; then
         cp ${PADDLE_DF_PATH}/${PADDLE_DF_NAME}.bak ${PADDLE_DF_PATH}/${PADDLE_DF_NAME}
-    elif [[ $CONF_FILE == 'dockerhub' ]]; then
-        sed -i "/^ .*sed -i 's#/d" ./build_docker.sh
     fi
 }
 
@@ -169,16 +162,16 @@ function run_container(){
         GPU_DEVICES=''
         GPU_NVIDIA_SMI=''
     fi
-    ## create container
-    #${DOCKER} run \
-    #    ${GPU_SO} \
-    #    ${GPU_DEVICES} \
-    #    ${GPU_NVIDIA_SMI} \
-    #    -v ${FAKE_ROOT:$DOCKER_ROOT} \
-    #    --name=${DOCKER_CONTAINER_NAME} \
-    #    ${DOCKER_IMAGE_NAME}:${VERSION} \
-    #    ${SHELL_TYPE} \
-    #    ${DOCKER_ROOT}/demo_run.sh ${MOD} ${DEMO_NAME}
+    ## create container run regression test
+    ${DOCKER} run \
+        ${GPU_SO} \
+        ${GPU_DEVICES} \
+        ${GPU_NVIDIA_SMI} \
+        -v ${FAKE_ROOT}:${DOCKER_ROOT} \
+        --name=${DOCKER_CONTAINER_NAME} \
+        ${DOCKER_IMAGE_NAME}:${VERSION} \
+        ${SHELL_TYPE} \
+        ${DOCKER_ROOT}/demo_run.sh ${MOD} ${DEMO_NAME}
     ### create container and show container OUTPUT for DEBUG
     #${DOCKER} run \
     #    ${GPU_SO} \
@@ -188,18 +181,13 @@ function run_container(){
     #    --name=${DOCKER_CONTAINER_NAME} \
     #    ${DOCKER_IMAGE_NAME}:${VERSION} \
     #    ${GPU_NVIDIA_SMI}
-    ${DOCKER} run -d \
-    	-p 8997:22 \
-    	${GPU_SO} \
-    	${GPU_DEVICES} \
-        ${GPU_NVIDIA_SMI} \
-    	-v ${FAKE_ROOT}:${DOCKER_ROOT} \
-        --security-opt seccomp=unconfined \
-    	--name=${DOCKER_CONTAINER_NAME} \
-    	${DOCKER_IMAGE_NAME}:${VERSION}
     #${DOCKER} run -d \
     #	-p 8997:22 \
+    #	${GPU_SO} \
+    #	${GPU_DEVICES} \
+    #    ${GPU_NVIDIA_SMI} \
     #	-v ${FAKE_ROOT}:${DOCKER_ROOT} \
+    #   --security-opt seccomp=unconfined \
     #	--name=${DOCKER_CONTAINER_NAME} \
     #	${DOCKER_IMAGE_NAME}:${VERSION}
 
@@ -264,7 +252,7 @@ function init_container(){
 function build_docker_image(){
 	echo "...................begin build image..................."
     init_image
-    if [[ ${CONF_FILE} == 'github' ]]; then
+    if [[ ${SOURCE_FROM} == 'github' ]]; then
         cd ${PADDLE_SOURCE_DIR}
         if [[ ${SUPPORT_AVX} == 'avx' ]]; then
             echo "avx"
@@ -281,7 +269,7 @@ function build_docker_image(){
             echo "UNKNOW BUILD PADDLE SOURCE IMAGE"
         fi
         cd ${BASE_DIR}
-    elif [[ ${CONF_FILE} == 'dockerhub' ]]; then
+    elif [[ ${SOURCE_FROM} == 'dockerhub' ]]; then
         ${DOCKER} build -t ${DOCKER_IMAGE_NAME}:${VERSION} .
     else
         err "UNKNOW BUILD DOCKER IMAGE build_docker_image"
@@ -302,10 +290,21 @@ function build_docker_image(){
 #   None
 #########################################################
 function pull_paddle_source_code() {
+    local git_branch=''
     if [[ -d ${PADDLE_SOURCE_DIR} ]]; then
         rm -rf ${PADDLE_SOURCE_DIR}
     fi
-    ${GIT} clone ${PADDLE_GIT_REPO}
+    echo "------------------------------------------"
+    echo "git clone paddle branch is " ${GIT_BRANCH} 
+    echo "------------------------------------------"
+    ${GIT} clone --recursive -b ${GIT_BRANCH} ${PADDLE_GIT_REPO}
+    cd ${PADDLE_SOURCE_DIR}
+    git_branch=( $(git describe --contains --all HEAD) )
+    if [[ ${git_branch} != ${GIT_BRANCH} ]]; then
+        err "git clone branch is not existed"
+        exit -1
+    fi
+    cd ${BASE_DIR}
 }
 
 #########################################################
@@ -325,7 +324,6 @@ function pull_paddle_source_code() {
 #   $SUPPORT_AVX
 #   $PADDLE_DF_NAME
 # Locals:
-#   $OPTIND
 #   $opt
 # Arguments:
 #   $@
@@ -333,11 +331,11 @@ function pull_paddle_source_code() {
 #   None
 #########################################################
 function pre_params() {
-    if [[ $# -eq 0 || $# -lt 2 ]]; then
+    echo "parameters is " $@
+    if [[ $# -eq 0 || $# -gt 1 ]]; then
         usage
         exit -1
     fi
-    local OPTIND
     while getopts c:h-: opt; do
         case ${opt} in
             -)
@@ -346,8 +344,13 @@ function pre_params() {
                         usage
                         exit 0
                         ;;
-                    conf=*)
+                    github=*)
                         CONF_FILE=${OPTARG#*=}
+                        SOURCE_FROM='github'
+                        ;;
+                    dockerhub=*)
+                        CONF_FILE=${OPTARG#*=}
+                        SOURCE_FROM='dockerhub'
                         ;;
                     *)
                         usage
@@ -355,14 +358,11 @@ function pre_params() {
                         ;;
                 esac
                 ;;
-            c)
-                CONF_FILE=${OPTARG}
-                ;;
             h)
                 usage
                 exit 0
                 ;;
-            \?)
+            ?)
                 usage
                 exit 1
                 ;;
@@ -374,9 +374,10 @@ function pre_params() {
     VERSION=( $(parser_params ${CONF_FILE} version) )
     DOCKER_IMAGE_NAME=( $(parser_params ${CONF_FILE} docker_image_name) )
     DOCKER_CONTAINER_NAME=( $(parser_params ${CONF_FILE} docker_container_name) )
-    CHINA_APT_MIRRORS=( $(parser_params ${CONF_FILE} china_apt_mirrors) )
-    if [[ ${CONF_FILE} == 'github' ]]; then
+    if [[ ${SOURCE_FROM} == 'github' ]]; then
+        CHINA_APT_MIRRORS=( $(parser_params ${CONF_FILE} china_apt_mirrors) )
         PADDLE_GIT_REPO=( $(parser_params ${CONF_FILE} paddle_git_repo) )
+        GIT_BRANCH=( $(parser_params ${CONF_FILE} paddle_branch) )
         SUPPORT_AVX=${VERSION##*-}
         if [[ ${MOD} == 'gpu' ]]; then
             PADDLE_DF_NAME=Dockerfile.${MOD}
@@ -390,7 +391,7 @@ function pre_params() {
 
 pre_params $@
 
-if [[ ${CONF_FILE} == 'github' ]]; then
+if [[ ${SOURCE_FROM} == 'github' ]]; then
     init_container
 
     echo "---------------------------------"
@@ -405,7 +406,7 @@ if [[ ${CONF_FILE} == 'github' ]]; then
     fi
 
     run_container
-elif [[ ${CONF_FILE} == 'dockerhub' ]]; then
+elif [[ ${SOURCE_FROM} == 'dockerhub' ]]; then
     init_container
     echo "---------------------------------"
     echo rebuild docker images is ${IS_BUILD}
@@ -414,7 +415,6 @@ elif [[ ${CONF_FILE} == 'dockerhub' ]]; then
     if [[ "${IS_BUILD}" == "ON" ]]; then
         prepare_dockerfile
         build_docker_image
-        repair_env
     fi
 
     run_container
@@ -423,4 +423,3 @@ else
     usage
     exit 1
 fi
-

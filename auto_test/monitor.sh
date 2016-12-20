@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2016 Baidu, Inc. All Rights Reserved
+# Copyright (c) 2016 PaddlePaddle Authors. All Rights Reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 # limitations under the License.
 
 date=`date "+%Y-%m-%d_%H:%M:%S"`
-output_file="./capability"
+output_file="./paddle_resource_usage.log"
 echo "--------------- $date BEGIN ---------------" > $output_file
 echo -e "DATE\tPID\t%MEM\tMEM\tGPU_MEM\tSTART\tTIME" >> $output_file
 
 get_date(){
-  cur_date=`date "+%Y-%m-%d_%H:%M:%S"`
-  gpu_mem=`nvidia-smi -i 1 -q  -d "MEMORY" | awk -F ":" '{if(NR==11){print $2"_GPU_MEM"}}'`
+  local cur_date=`date "+%Y-%m-%d_%H:%M:%S"`
+  local gpu_mem=`nvidia-smi -i 1 -q  -d "MEMORY" | awk -F ":" '{if(NR==11){print $2"_GPU_MEM"}}'`
   ps aux | grep -v "grep" | grep "paddle_trainer"\
     | awk -F " "  '
     {
@@ -34,24 +34,24 @@ get_date(){
     }' >> $output_file
 }
 
-flag=false
-count=0
+trainer_alive=false
+alive_or_death_period=0
 
 while true;do
   pid=$( ps aux | grep -v "grep" | grep "paddle_trainer" | awk '{print $2}' )
   if [ x"$pid" != x ];then
     get_date
-    flag=true
-    count=0
+    trainer_alive=true
+    alive_or_death_period=0
   else
-    if [ $count -ge 10 ];then
+    if [ $alive_or_death_period -ge 10 ];then
       echo "No training process detected. Program exit." >> $output_file
       exit 1
-    elif [[ $flag == "true" && $count -ge 5 ]];then
+    elif [[ $trainer_alive == "true" && $alive_or_death_period -ge 5 ]];then
       echo "Training complete!" >> $output_file
       exit 0
 	fi
   fi
-  let count+=1
+  let alive_or_death_period+=1
   sleep 2
 done

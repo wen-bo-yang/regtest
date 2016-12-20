@@ -22,6 +22,7 @@ LOG_PATH="/root/auto_test/logdir"_${logdate}
 mkdir ${LOG_PATH}
 cd ${RUN_PATH}
 
+#the demo list
 DEMO_NAME=(
 "quick_start@lr"
 "quick_start@cnn"
@@ -34,6 +35,7 @@ DEMO_NAME=(
 "semantic_role_labeling"
 )
 
+#the demo name of quick start
 QUICK_START=(
 "quick_start@lr"
 "quick_start@cnn"
@@ -47,28 +49,33 @@ function usage()
   echo "example: `basename $0` gpu quick" >&2
 }
 
-
 if [ $# -lt 2 ]
 then
   usage >&2
   exit 1
 fi
 
+#According the name of demo,decide to run which demo;
+#if demo_name is in ['quick_start','quick_start@all'],it will run all of the quick start demo;
+#if demo_name is in ['all'],it will run all the demo;
+#if demo_name is in ['$DEMO_NAME[@]'],it will run the demo input;
+#if demo_name is None,it will run no demo and exit;
+#if demo_name is not match any,it will exit.
 if ([[ $2 == "quick_start" ]] || [[ $2 == "quick_start@all" ]]);then
     echo "run quick start demo !" 
     for demo in ${QUICK_START[@]};do
-        python run.py demo.conf ${demo} $1
+        python run.py -c demo.conf -n ${demo} -g $1
     done
 
 elif [[ $2 == "all" ]];then
     echo "run all demo start!"
     for demo in ${DEMO_NAME[@]};do
-        python run.py demo.conf ${demo} $1
+        python run.py -c demo.conf -n ${demo} -g $1
     done
 
 elif [[ "${DEMO_NAME[@]}" =~ "$2" ]];then
     echo "run $2 demo start"
-    python run.py demo.conf $2 $1
+    python run.py -c demo.conf -n $2 -g $1
     
 elif [ !$2 ];then
 	echo "No need to run demo!"
@@ -79,7 +86,6 @@ else:
 	exit
 	
 fi
+
 echo "Run Demo done!"
-
 exit 0
-
