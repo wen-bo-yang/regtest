@@ -34,7 +34,7 @@ import sys
 from docopt import docopt
 
 
-def drawLogInfo(logFile):
+def draw_log_info(logFile):
     data = {'AvgCost': []}
     passPos = []
     with open(logFile, 'r') as f:
@@ -62,7 +62,7 @@ def drawLogInfo(logFile):
             f.savefig(key + '_pass.png')
 
 
-def drawPaddleMemoryUsage(monitorFile):
+def draw_paddle_usage(monitorFile):
     data = {'memory': [], "gpuMemory": []}
     with open(monitorFile, 'r') as f:
         for line in f:
@@ -81,5 +81,5 @@ if __name__ == '__main__':
     arguments = docopt(__doc__)
     monitorFile = arguments['MONITORFILE']
     logFile = arguments['LOGFILE']
-    drawLogInfo(logFile)
-    drawPaddleMemoryUsage(monitorFile)
+    draw_log_info(logFile)
+    draw_paddle_usage(monitorFile)

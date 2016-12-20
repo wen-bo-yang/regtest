@@ -57,5 +57,5 @@ mkdir -p ${LOG_PATH}/${SAVE_LOG_PATH}
 
 awk '{if ($0 ~ /Batch=/) print $1,$2,$5,$6,$7,$8,$10,$12; else if ($0 ~ /Test samples/) print $1,$2,$6,$7,$9}' \
   ${GENERATED_LOG_PATH}/${TRAIN_LOG} > ${LOG_PATH}/${SAVE_LOG_PATH}/${TRAIN_LOG}.out
-python ${TEST_PATH}/addTag.py -m ${GENERATED_LOG_PATH}/${MONITOR_LOG}  -l ${LOG_PATH}/${SAVE_LOG_PATH}/${TRAIN_LOG}.out  \
+python ${TEST_PATH}/add_tag.py -m ${GENERATED_LOG_PATH}/${MONITOR_LOG}  -l ${LOG_PATH}/${SAVE_LOG_PATH}/${TRAIN_LOG}.out  \
   -o ${LOG_PATH}/${SAVE_LOG_PATH}/${MONITOR_LOG}.out
