@@ -34,7 +34,7 @@ Options:
 
 """
 
-import ConfigParser
+import json
 import string, os, sys
 import subprocess
 import time
@@ -45,24 +45,27 @@ def parse_conf(filename, demo_mode):
     """
     According to the value of demo_mode,
     get the related information to run each demo.
-    :param filename:the process name write in demo.conf
+    :param filename:the process name write in demo_conf.json 
     :param demo_mode:the name of demo_mode which input
     :return: the list for each demo_mode
     """
-    cf = ConfigParser.ConfigParser()
-    cf.read(filename)
-    secs = cf.sections()
-    opts = cf.options(demo_mode)
-    print 'options:', opts
-    optList = ['download', 'preprocess', 'train', 'test', 'predict', 'log']
-    outList = []
-    for opt in optList:
-        if opt in opts:
-            out = cf.get(demo_mode, opt)
-            outList.append(out)
+    with open(filename) as jsonfile:
+        json_data = json.load(jsonfile)
+        optList = ['download', 'preprocess', 'train', 'test', 'predict', 'log']
+        outList = []
+        sess = json_data.keys()
+        if demo_mode in sess:
+            for demo_value in json_data[demo_mode]:
+                opts = demo_value.keys()
+                for opt in optList:
+                    if opt in opts:
+                            outList.append(demo_value[opt])
+                    else:
+                        outList.append(None)
+                print outList
+                return outList
         else:
-            outList.append(None)
-    return outList
+            raise ValueError("Demo is not in demo_mode!")
 
 
 def download_pro(download):
@@ -206,10 +209,9 @@ def main(argv):
     demo_name = argv['DEMONAME']
     gpu_mode = argv['GPUMODE']
 
-    DEMO_PATH = "/root/paddle/demo/"
+    DEMO_PATH = "/root/paddle/demo"
     demo_mode, sub_demo = get_sub_demo(demo_name)
-    [download, preprocess, train, test, predict, log] = parse_conf(demo_conf,
-                                                                   demo_mode)
+    [download, preprocess, train, test, predict, log] = parse_conf(demo_conf,demo_mode)
     workdir = os.path.join(DEMO_PATH, demo_mode)
     os.chdir(workdir)
     download_pro(download)
