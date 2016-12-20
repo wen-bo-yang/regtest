@@ -19,7 +19,7 @@ demo的自动化运行：自我选择性的选取想要运行的demo，或者运
 
   - 容器构建
 
-    Paddle的运行环境构建可以从 [Docker Hub paddledev/paddle](https://hub.docker.com/r/paddledev/paddle/builds/) 和 [Github PaddlePaddle/Paddle](https://github.com/PaddlePaddle/Paddle) 进行Paddle运行环境构建。在每次构建中，可以指定是否重新构建docker image、Paddle源、是否支持GPU、以及指定apt-get更新源等等，具体详情可以查看`dockerhub` 和`github`配置文件中对应的注释。环境构建成功后会启动一个docker的container，程序会将所需要的资源和文件以挂载卷的方式挂到container中，同时会自动触发`auto_test/demo_run.sh`运行配置文件中指定的demo和对应的模型。如果构建iamge和启动container成功，则可以在屏幕中看到指定demo的运行详情。
+   Paddle的运行环境构建可以从 [Docker Hub paddledev/paddle](https://hub.docker.com/r/paddledev/paddle/builds/) 和 [Github PaddlePaddle/Paddle](https://github.com/PaddlePaddle/Paddle) 进行Paddle运行环境构建。在每次构建中，可以指定是否重新构建docker image、Paddle源、是否支持GPU、以及指定apt-get更新源等等，具体详情可以查看`dockerhub` 和`github`配置文件中对应的注释。环境构建成功后会启动一个docker的container，程序会将所需要的资源和文件以挂载卷的方式挂到container中，同时会自动触发`auto_test/demo_run.sh`运行配置文件中指定的demo和对应的模型。如果构建iamge和启动container成功，则可以在屏幕中看到指定demo的运行详情。
 
     具体构建流程如下图所示：
 
