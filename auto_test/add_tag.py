@@ -12,9 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Usage: addTag.py -m [MONITORFILE] -l [LOGFILE] -o [OUTPUTMONITORFILE]
+"""Usage: add_tag.py -m [MONITORFILE] -l [LOGFILE] -o [OUTPUTMONITORFILE]
 
-addTag to monitorFile.
+addTag to monitorFile. Here tag means "Batch=100" or "Pass=0" etc. As we just 
+record the cpu, memory, GPU memory usage and time in monitorfile, we don't
+know exactly the usage in a certain batch or pass. Thus We have to compare the
+time between monitor file and  train.log.
 
 Arguments:
     MONITORFILE             cpu, gpu and memory usage file collected by monitor.sh
@@ -35,7 +38,7 @@ import datetime
 import bisect
 
 
-def readMonitorFile(monitorFile):
+def read_monitor_file(monitorFile):
     """
         reaad Monitor file, the format is :
         ---------------------2016-11-23_07:33:53 BEGIN-----------------------------
@@ -54,7 +57,7 @@ def readMonitorFile(monitorFile):
     return monitorTime
 
 
-def readTrainLogFileAndLocateTag(logFile, monitorTime):
+def locate_tag(logFile, monitorTime):
     """
         once we have a monitor file and a train log file, we have to identify the location of 
         each line of train.log in monitor log file. After this, we can get format like below:
@@ -69,7 +72,10 @@ def readTrainLogFileAndLocateTag(logFile, monitorTime):
     tagList = {}
     with open(logFile, 'r') as f:
         for line in f:
-            [t1, t2, tag] = line.split()[:3]
+            line_data = line.split()
+            assert len(line_data) >= 3
+            # before this parsing process, we use shell script to preprocess train.log
+            t1, t2, tag = line_data[0:3]
             t1 = t1.replace('I', '').replace('.', '')
             dtime = datetime.datetime.strptime(
                 str(datetime.datetime.now().year) + "-" + t1[:2] + "-" + t1[2:]
@@ -80,9 +86,8 @@ def readTrainLogFileAndLocateTag(logFile, monitorTime):
     return tagList
 
 
-def addTagToMonitor(monitorTime, monitorFile, tagList, outMonitorFile):
-    OUT = open(outMonitorFile, 'w')
-    with open(monitorFile, 'r') as IN:
+def add_tag_to_monitor(monitorTime, monitorFile, tagList, outMonitorFile):
+    with open(monitorFile, 'r') as IN, open(outMonitorFile, 'w') as OUT:
         index = 0
         for line in IN:
             if index in tagList.keys():
@@ -90,7 +95,6 @@ def addTagToMonitor(monitorTime, monitorFile, tagList, outMonitorFile):
             else:
                 print >> OUT, line.strip()
             index += 1
-    OUT.close()
 
 
 if __name__ == '__main__':
@@ -98,6 +102,6 @@ if __name__ == '__main__':
     monitorFile = arguments['MONITORFILE']
     logFile = arguments['LOGFILE']
     outMonitorFile = arguments['OUTPUTMONITORFILE']
-    monitorTime = readMonitorFile(monitorFile)
-    tagList = readTrainLogFileAndLocateTag(logFile, monitorTime)
-    addTagToMonitor(monitorTime, monitorFile, tagList, outMonitorFile)
+    monitorTime = read_monitor_file(monitorFile)
+    tagList = locate_tag(logFile, monitorTime)
+    add_tag_to_monitor(monitorTime, monitorFile, tagList, outMonitorFile)
