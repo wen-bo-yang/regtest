@@ -1,0 +1,21 @@
+#params section
+[params]
+#Paddle docker image version
+#The Paddle docker image is from https://hub.docker.com/r/Paddledev/Paddle/builds/
+#Please use image with demo when you use regression test script
+version = gpu-demo-v0.9.0a0
+#run Paddle Paddle moudle cpu or gpu
+mod = gpu
+#is rebuild locale images
+rebuild = ON
+#run Paddle demo name
+#if you want run all demo, please use demo_name = all
+#e.g. demo_name = all
+#if demo has muitiple module, pleas use '@' split demo name and module name
+#Module is all that mean is run all module
+#e.g. demo_name = quick_start@all
+demo_name = sentiment
+#The docker_image_name is mean that the name of build docker image REPOSITORY
+docker_image_name = regression/paddle
+#The docker_container_name is mean that the name of running docker container
+docker_container_name = paddle_gpu_0.9.0a
