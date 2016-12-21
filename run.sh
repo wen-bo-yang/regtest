@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -x
+
 MOD=''
 VERSION=''
 IS_BUILD=''
@@ -89,7 +91,6 @@ function parser_params() {
 #   $CONF_FILE
 #   $PADDLE_DF_PATH
 #   $PADDLE_DF_NAME
-#   $CHINA_APT_MIRRORS
 #   $VERSION
 # Arguments:
 #   None
@@ -100,10 +101,6 @@ function prepare_dockerfile() {
     echo "...................begin prepare dockerfile..................."
     if [[ ${SOURCE_FROM} == 'github' ]]; then
         cp ${PADDLE_DF_PATH}/${PADDLE_DF_NAME} ${PADDLE_DF_PATH}/${PADDLE_DF_NAME}.bak
-        if [[ ${CHINA_APT_MIRRORS} == 'ON' ]]; then
-            sed -i "/RUN apt-get update/i\RUN sed -i 's#http://archive.ubuntu.com#http://mirrors.163.com#g' /etc/apt/sources.list" \
-                ${PADDLE_DF_PATH}/${PADDLE_DF_NAME}
-        fi
         sed -i "/build.sh$/a\RUN cp -r /paddle/ /root/" \
             ${PADDLE_DF_PATH}/${PADDLE_DF_NAME}
     elif [[ ${SOURCE_FROM} == 'dockerhub' ]]; then
@@ -244,12 +241,21 @@ function init_container(){
 #   $PADDLE_DF_PATH
 #   $PADDLE_DF_NAME
 #   $BASE_DIR
+# LOCALS:
+#   $ubuntu_mirror
 # Arguments:
 #   None
 # Returns:
 #   None
 #########################################################
 function build_docker_image(){
+    local ubuntu_mirror
+    if [[ -n ${UBUNTU_MIRROR} ]]; then
+        ubuntu_mirror='--build-arg UBUNTU_MIRROR="'${UBUNTU_MIRROR}'"'
+    else
+        ubuntu_mirror=''
+    fi
+
 	echo "...................begin build image..................."
     init_image
     if [[ ${SOURCE_FROM} == 'github' ]]; then
@@ -257,12 +263,14 @@ function build_docker_image(){
         if [[ ${SUPPORT_AVX} == 'avx' ]]; then
             echo "avx"
             ${DOCKER} build \
+                $ubuntu_mirror \
                 -t ${DOCKER_IMAGE_NAME}:${VERSION} \
                 -f ${PADDLE_DF_PATH}/${PADDLE_DF_NAME} .
         elif [[ ${SUPPORT_AVX} == 'noavx' ]]; then
             echo "noavx"
             ${DOCKER} build \
                 --build-arg WITH_AVX=OFF \
+                $ubuntu_mirror \
                 -t ${DOCKER_IMAGE_NAME}:${VERSION} \
                 -f ${PADDLE_DF_PATH}/${PADDLE_DF_NAME} .
         else
@@ -320,7 +328,7 @@ function pull_paddle_source_code() {
 #   $DOCKER_IMAGE_NAME
 #   $DOCKER_CONTAINER_NAME
 #   $PADDLE_GIT_REPO
-#   $CHINA_APT_MIRRORS
+#   $UBUNTU_MIRROR
 #   $SUPPORT_AVX
 #   $PADDLE_DF_NAME
 # Locals:
@@ -375,7 +383,7 @@ function pre_params() {
     DOCKER_IMAGE_NAME=( $(parser_params ${CONF_FILE} docker_image_name) )
     DOCKER_CONTAINER_NAME=( $(parser_params ${CONF_FILE} docker_container_name) )
     if [[ ${SOURCE_FROM} == 'github' ]]; then
-        CHINA_APT_MIRRORS=( $(parser_params ${CONF_FILE} china_apt_mirrors) )
+        UBUNTU_MIRROR=( $(parser_params ${CONF_FILE} ubuntu_mirror) )
         PADDLE_GIT_REPO=( $(parser_params ${CONF_FILE} paddle_git_repo) )
         GIT_BRANCH=( $(parser_params ${CONF_FILE} paddle_branch) )
         SUPPORT_AVX=${VERSION##*-}
