@@ -59,7 +59,7 @@ def parse_conf(filename, demo_mode):
                 opts = demo_value.keys()
                 for opt in optList:
                     if opt in opts:
-                            outList.append(demo_value[opt])
+                        outList.append(demo_value[opt])
                     else:
                         outList.append(None)
                 print outList
