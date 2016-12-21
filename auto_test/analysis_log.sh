@@ -49,10 +49,6 @@ while getopts "g:s:i:t:" arg;do
   esac
 done
 
-#if [ -d ${LOG_PATH}/${SAVE_LOG_PATH} ]; then
-#  rm -rf ${LOG_PATH}/${SAVE_LOG_PATH}
-#fi
-
 mkdir -p ${LOG_PATH}/${SAVE_LOG_PATH}
 
 awk '{if ($0 ~ /Batch=/) print $1,$2,$5,$6,$7,$8,$10,$12; else if ($0 ~ /Test samples/) print $1,$2,$6,$7,$9}' \
