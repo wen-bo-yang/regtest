@@ -182,7 +182,7 @@ function run_container(){
     #	-p 8997:22 \
     #	${GPU_SO} \
     #	${GPU_DEVICES} \
-    #    ${GPU_NVIDIA_SMI} \
+    #   ${GPU_NVIDIA_SMI} \
     #	-v ${FAKE_ROOT}:${DOCKER_ROOT} \
     #   --security-opt seccomp=unconfined \
     #	--name=${DOCKER_CONTAINER_NAME} \
@@ -192,7 +192,7 @@ function run_container(){
 }
 
 ######################################################
-# Initialize image,if you rebuild docker image
+# Initialize image, if you rebuild docker image
 # Globals:
 #   $DOCKER_IMAGE_NAME
 #   $VERSION
@@ -210,7 +210,7 @@ function init_image(){
 }
 
 #########################################################
-# Initialize container,if you rerun the docker container
+# Initialize container, if you rerun the docker container
 # with the same docker container name
 # Globals:
 #   $DOCKER_CONTAINER_NAME
