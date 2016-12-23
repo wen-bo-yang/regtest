@@ -57,7 +57,7 @@ then
 fi
 
 #According the name of demo,decide to run which demo;
-#if demo_name is in ['quick_start','quick_start@all'],it will run all of the quick start demo;
+#if demo_name is in ['quick_start','quick_start@all'], it will run all of the quick start demo;
 #if demo_name is in ['all'],it will run all the demo;
 #if demo_name is in ['$DEMO_NAME[@]'],it will run the demo input;
 #if demo_name is None,it will run no demo and exit;

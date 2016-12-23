@@ -70,7 +70,7 @@ def parse_conf(filename, demo_mode):
 
 def download_pro(download):
     """
-    According to the value of download,to run the download data process.
+    According to the value of download, to run the download data process.
     :param download: the value of download
     :return:None
     """
@@ -80,7 +80,7 @@ def download_pro(download):
 
 def preprocess_pro(preprocess):
     """
-    According to the value of preprocess,to run the preprocess process.
+    According to the value of preprocess, to run the preprocess process.
     :param preprocess: the value of preprocess
     :return:None
     """
@@ -90,7 +90,7 @@ def preprocess_pro(preprocess):
 
 def train_pro(train):
     """
-    According to the value of train,to run the train process.
+    According to the value of train, to run the train process.
     :param train: the value of train
     :return:None
     """
@@ -100,7 +100,7 @@ def train_pro(train):
 
 def predict_pro(predict):
     """
-    According to the value of predict,to run the predict process.
+    According to the value of predict, to run the predict process.
     :param predict: the value of predict
     :return:None
     """
@@ -110,7 +110,7 @@ def predict_pro(predict):
 
 def test_pro(test):
     """
-    According to the value of test,to run the test process.
+    According to the value of test, to run the test process.
     :param test: the value of test
     :return:None
     """
